@@ -8,9 +8,16 @@
 
 int read_file(int fd, size_t size)
 {
-    char new_buf[size + 1] = {};
-    int n_read = read(fd, new_buf, size);
     pid_t pid = getpid();
+
+    // The size of the file might be too big -> using dymanic allocation
+    char *new_buf = (char *)calloc(sizeof(char), size + 1);
+    if(!new_buf)
+    {
+        fprintf(stderr, "pid %d: Failed to allocate memroy", pid);
+        return 1;
+    }
+    int n_read = read(fd, new_buf, size);
     if(n_read < 0)
     {
         fprintf(stderr, "pid %d: Failed to read from file", pid);
@@ -18,6 +25,7 @@ int read_file(int fd, size_t size)
     }
     new_buf[n_read] = '\0';
     printf("from process %d: %s\n", pid, new_buf);
+    free(new_buf);
     return 0;
 }
 
@@ -99,26 +107,16 @@ int main(int argc, char *argv[])
     // Rewind to start
     lseek(new_fd, 0, SEEK_SET);
 
-    // Child process
-    if(pid == 0)
-    {
-        char ch_buf[finfo.st_size + 1] = {};
-        read_file(new_fd, finfo.st_size);
-        free(buf);
-        close(new_fd);
-        return 0;
-    }
     // Parent process
-    else
+    if(pid)
     {
         // Wait for child to terminate
         waitpid(pid, NULL, 0);
-
-        read_file(new_fd, finfo.st_size);
-        free(buf);
-        close(new_fd);
     }
+    read_file(new_fd, finfo.st_size);
 
+    free(buf);
+    close(new_fd);
     return 0;
 }
 
