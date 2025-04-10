@@ -91,23 +91,27 @@ void *bitonicSort(void *arg)
     return NULL;
 }
 
+// Calling bitonicSort
 void parallelBitonicSort(int *array, int size, enum dir_t dir)
 {
     struct SortArgs args = {array, 0, size - 1, dir};
     bitonicSort(&args);
 }
 
+// Checks whether x is power of 2
 int isPowerOfTwo(uint x)
 {
     return (x & (x - 1)) == 0;
 }
 
+// Get number that is bigger than x and is a power of 2
 uint getCloseToPowerTwo(uint x)
 {
     uint power = (uint)log2((double)x) + 1;
     return 1 << power;
 }
 
+// The size of array must be a power of 2 => filling padding with MAX_VAL
 void fillLastBig(arr_t *arr, uint size, uint n)
 {
     for(uint i = 1; i <= n; ++i)
@@ -118,14 +122,17 @@ void fillLastBig(arr_t *arr, uint size, uint n)
 
 int main()
 {
+    // N - number of elements in the input array
     uint N = 0;
     if(scanf("%d", &N) == EOF)
     {
         printf("failed to scanf number of elements in array\n");
         return 1;
     }
+    // The size of the array for bitonic sort (should be a power of 2)
     uint size = N;
 
+    // Filling array to the size power of 2
     if(!isPowerOfTwo(N))
     {
         size = getCloseToPowerTwo(N);
@@ -139,6 +146,7 @@ int main()
         if(scanf("%d", &arr[i]) == EOF)
         {
             printf("failed to scanf the array\n");
+            free(arr);
             return 1;
         }
     }
