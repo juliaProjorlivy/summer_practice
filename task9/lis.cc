@@ -72,6 +72,7 @@ std::vector<std::vector<T>> find_lcs(std::vector<T> arr1, std::vector<T> arr2)
     return dp;
 }
 
+// Get longest increasing subsequnce through longest common subsequence of a given array and sorted array
 template <typename T>
 std::vector<T> get_lis(std::vector<T> arr)
 {
